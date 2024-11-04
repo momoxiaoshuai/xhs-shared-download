@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+	<link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>小红书图片去水印工具</title>
+    <style>
+        body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    }
+
+    .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .input-group textarea {
+        width: 100%;  /* 确保和按钮一样宽 */
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        min-height: 100px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        box-sizing: border-box;  /* 使内边距计算在宽度之内 */
+    }
+
+    .button {
+        background-color: #ff2442;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;  /* 确保按钮和输入框一样宽 */
+        box-sizing: border-box;  /* 确保按钮内边距不影响宽度 */
+    }
+
+    .button:hover {
+        background-color: #e61e39;
+    }
+
+    .button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
+
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .image-item {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .image-item img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 20px;
+        display: none;
+    }
+
+    .tips {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>小红书图片去水印工具</h1>
+        </div>
+
+        <div class="input-group">
+            <textarea
+                id="urlInput"
+                placeholder="请粘贴小红书分享文本，例如： 'xxx发布了一篇小红书笔记，快来看吧！😆 XXX 😆 http://xhslink.com/XXX，复制本条信息，打开【小红书】App查看精彩内容！'"
+            ></textarea>
+            <button class="button" id="processBtn" onclick="processUrl()">获取图片</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div>处理中，请稍候...</div>
+        </div>
+
+        <div class="image-grid" id="imageGrid"></div>
+
+        <div class="tips">
+            <p>使用说明：</p>
+            <ol>
+                <li>打开小红书 App，点击分享按钮</li>
+                <li>选择"复制链接"</li>
+                <li>将复制的完整文本粘贴到上方输入框</li>
+                <li>点击"获取图片"按钮</li>
+                <li>等待图片加载完成后，长按图片保存到相册</li>
+            </ol>
+        </div>
+    </div>
+
+<script>
+    let processing = false;
+
+    function processUrl() {
+        if (processing) return;
+
+        const input = document.getElementById('urlInput');
+        const text = input.value.trim();
+        const button = document.getElementById('processBtn');
+
+        if (!text) {
+            alert('请粘贴小红书分享文本');
+            return;
+        }
+
+        processing = true;
+        button.disabled = true;
+
+        const loading = document.getElementById('loading');
+        const imageGrid = document.getElementById('imageGrid');
+        loading.style.display = 'block';
+        imageGrid.innerHTML = '';
+
+        fetch('/api/images', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ shareUrl: text })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('网络请求失败');
+            }
+            return response.json();
+        })
+        .then(response => {
+            if (response.code === 200 && response.data && response.data.length > 0) {
+                displayImages(response.data);
+            } else {
+                throw new Error(response.message || '未找到图片');
+            }
+        })
+        .catch(error => {
+            alert('处理失败：' + error.message);
+            console.error('Error:', error);
+        })
+        .finally(() => {
+            loading.style.display = 'none';
+            button.disabled = false;
+            processing = false;
+        });
+    }
+
+    function displayImages(urls) {
+        const imageGrid = document.getElementById('imageGrid');
+        imageGrid.innerHTML = '';
+
+        urls.forEach((url, index) => {
+            const div = document.createElement('div');
+            div.className = 'image-item';
+
+            const img = document.createElement('img');
+            img.src = `/proxy_image?url=${encodeURIComponent(url)}`;
+            img.alt = `图片 ${index + 1}`;
+            img.loading = 'lazy';
+
+            const tip = document.createElement('p');
+            tip.textContent = '长按图片保存到相册';
+            tip.style.textAlign = 'center';
+
+            div.appendChild(img);
+            div.appendChild(tip);
+            imageGrid.appendChild(div);
+        });
+    }
+
+    function isWeChatBrowser() {
+        const ua = navigator.userAgent.toLowerCase();
+        return ua.indexOf('micromessenger') !== -1;
+    }
+
+    if (isWeChatBrowser()) {
+        alert('长按图片保存到相册');
+    }
+
+    document.getElementById('urlInput').addEventListener('paste', (e) => {
+        setTimeout(() => {
+            if (e.target.value.trim().includes('xhslink.com')) {
+                processUrl();
+            }
+        }, 100);
+    });
+</script>
+</body>
+</html>
