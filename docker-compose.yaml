@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  xhs-share:
+    build: .
+    container_name: xhs
+    ports:
+      - "10000:10000"
+    environment:
+      - FLASK_APP=app.py
+    restart: unless-stopped
