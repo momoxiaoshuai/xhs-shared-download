@@ -3,6 +3,7 @@ version: '3.8'
 services:
   xhs-share:
     build: .
+    image: xhs-share-downloader:latest  
     container_name: xhs
     ports:
       - "10000:10000"
