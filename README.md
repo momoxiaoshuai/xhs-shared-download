@@ -5,3 +5,5 @@
 
 ## 启动app.py后默认端口:10010
 ![image](https://github.com/user-attachments/assets/f6d25445-6553-4685-915a-a862d910671b)
+
+![image](https://github.com/user-attachments/assets/b846b601-42cc-4cd8-bc34-cced63deddcc)
