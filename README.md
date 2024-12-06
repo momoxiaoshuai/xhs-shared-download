@@ -25,3 +25,37 @@
 ## 部署说明
 
 ### Docker 部署（推荐）
+
+克隆项目
+git clone https://github.com/your-username/xiaohongshu-downloader.git
+
+进入项目目录
+cd xiaohongshu-downloader
+
+启动服务
+docker compose up -d
+
+默认端口：10010，如需修改请编辑 docker-compose.yml 文件
+
+### 手动部署
+
+1. 确保已安装 Python 3.7+
+2. 安装依赖：`pip install -r requirements.txt`
+3. 运行服务：`python main.py`
+
+## 项目截图
+
+![移动端效果](https://github.com/user-attachments/assets/6efc5a4c-a65b-40ec-8d7f-110e53d2cd2f)
+
+![桌面端效果](https://github.com/user-attachments/assets/984e0731-e140-4d9b-a317-16c13841b497)
+
+## 技术栈
+
+- 前端：HTML5 + CSS3 + JavaScript
+- 后端：Python
+- 部署：Docker
+
+## 注意事项
+
+- 本工具仅供学习交流使用
+- 请勿用于商业用途
