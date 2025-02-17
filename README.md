@@ -10,7 +10,7 @@
 
 ## 在线体验
 
-访问地址：[xhs.dashuaibi.monster](http://xhs.dashuaibi.monster/)
+访问地址：[xhs.wus.homes](https://xhs.wus.homes/)
 
 ## 使用说明
 
