@@ -25,7 +25,7 @@
 ### Docker 部署（推荐）
 
 克隆项目
-git clone https://github.com/your-username/xiaohongshu-downloader.git
+git clone https://github.com/momoxiaoshuai/xhs-shared-download.git
 
 进入项目目录
 cd xiaohongshu-downloader
